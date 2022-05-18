@@ -1,11 +1,10 @@
-name: console_log
+name: logger_console
 description: A logger project
 version: 0.0.1
-author: nghinv@lumi.biz
-homepage: https://github.com/Nghi-NV/console-log
+homepage: https://github.com/Nghi-NV/logger_console
 
 environment:
-  sdk: '>=2.18.0-109.0.dev <3.0.0'
+  sdk: '>=2.12.0-259.8.beta <3.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
