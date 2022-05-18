@@ -1,4 +1,4 @@
-library console_log;
+library logger_console;
 
 import 'dart:convert';
 import 'dart:io';
