@@ -1,8 +1,6 @@
 # Console log package
 
-<p align="center">
-<img src='./assets/example.png'>
-</p>
+![](assets/example.png)
 
 ## Usage
 

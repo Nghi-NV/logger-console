@@ -11,6 +11,7 @@ class Console {
   static WebSocketChannel? _channel;
   static String host = "localhost";
   static int port = 9090;
+  static bool logEnable = kDebugMode ? true : false;
 
   static WebSocketChannel? getInstance() {
     if (_channel == null) {
@@ -112,6 +113,10 @@ class Console {
   }
 
   static log(dynamic param, [dynamic params]) {
+    if (logEnable == false) {
+      return;
+    }
+
     final Map<String, dynamic> dataSending = {
       'type': 'fromApp',
       'data': {'param': param, 'params': params}
