@@ -1,10 +1,10 @@
 # Console log package
 
-![](assets/example.png)
+![](https://github.com/Nghi-NV/logger-console/blob/main/assets/example.png)
 
 ## Usage
 
-- Download [`ServerLog`](https://github.com/Nghi-NV/logger-console/blob/main/assets/example.png) application for mac os, window and linux
+- Download [`ServerLog`](https://drive.google.com/drive/folders/1h3qreStLaesHTFkgwHRKaMZFrt88Cx-Y?usp=sharing) application for mac os, window and linux
 
 In the main.dart set `logEnable = true` for release mode 
 ```dart
