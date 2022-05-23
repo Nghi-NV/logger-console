@@ -1,3 +1,8 @@
+
+## 0.0.5
+
+* update documents
+
 ## 0.0.4
 
 * add enable logger
