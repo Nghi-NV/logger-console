@@ -45,9 +45,9 @@ class Console {
       };
     } else if (Platform.isAndroid) {
       clientInfo = {
-        'name': deviceInfoData['name'],
+        'name': deviceInfoData['model'],
         'model': deviceInfoData['model'],
-        'systemName': deviceInfoData['systemName'],
+        'systemName': 'Android',
         'isPhysicalDevice': deviceInfoData['isPhysicalDevice'],
         'id': deviceInfoData['androidId'],
       };

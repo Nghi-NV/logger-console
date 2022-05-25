@@ -1,4 +1,8 @@
 
+## 0.0.7
+
+* fix show android device name
+
 ## 0.0.6
 
 * update documents
