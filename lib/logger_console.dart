@@ -153,9 +153,22 @@ class Console {
       return;
     }
 
+    var jsonParam = param;
+    var jsonParams = params;
+    try {
+      json.encode(param);
+    } catch (error) {
+      jsonParam = "$param";
+    }
+    try {
+      json.encode(params);
+    } catch (error) {
+      jsonParams = "$params";
+    }
+
     final Map<String, dynamic> dataSending = {
       'type': 'fromApp',
-      'data': {'param': param, 'params': params}
+      'data': {'param': jsonParam, 'params': jsonParams}
     };
 
     if (_channel == null) {

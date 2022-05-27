@@ -1,4 +1,8 @@
 
+## 0.1.2
+
+* fix crash when can not encode data
+
 ## 0.1.1
 
 * update logic log
