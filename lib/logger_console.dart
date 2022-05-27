@@ -25,6 +25,8 @@ class Console {
   /// when uri != null, use uri to connect socket
   static String? uri;
 
+  static Map<String, dynamic>? clientInfo;
+
   static WebSocketChannel? getInstance() {
     if (_channel == null) {
       connectServer();
@@ -42,12 +44,10 @@ class Console {
     return Uri.parse(uriString);
   }
 
-  static Future<Map<String, dynamic>> getDeviceInfo() async {
+  static Future getDeviceInfo() async {
     final deviceInfoPlugin = DeviceInfoPlugin();
     final deviceInfo = await deviceInfoPlugin.deviceInfo;
     final deviceInfoData = deviceInfo.toMap();
-
-    Map<String, dynamic> clientInfo = {};
 
     if (kIsWeb) {
       clientInfo = {
@@ -108,13 +108,13 @@ class Console {
         'id': 'Unknow',
       };
     }
-
-    return clientInfo;
   }
 
   static connectServer([String? data]) async {
     _channel = WebSocketChannel.connect(getUri());
-    final clientInfo = await getDeviceInfo();
+    if (clientInfo == null) {
+      await getDeviceInfo();
+    }
 
     final Map<String, dynamic> dataSending = {
       'type': 'fromApp',
@@ -126,6 +126,10 @@ class Console {
     if (data != null) {
       _channel!.sink.add(data);
     }
+
+    _channel!.stream.listen((onData) {}, onDone: () {
+      _channel = null;
+    });
   }
 
   /// Send log to [Server Log] app
@@ -155,6 +159,12 @@ class Console {
     };
 
     if (_channel == null) {
+      connectServer(json.encode(dataSending));
+      return;
+    }
+
+    if (_channel!.closeCode != null) {
+      _channel = null;
       connectServer(json.encode(dataSending));
       return;
     }

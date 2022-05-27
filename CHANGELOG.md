@@ -1,4 +1,8 @@
 
+## 0.1.1
+
+* update logic log
+
 ## 0.1.0
 
 * add uri param
