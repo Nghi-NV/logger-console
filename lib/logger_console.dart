@@ -9,9 +9,21 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Console {
   static WebSocketChannel? _channel;
+
+  /// host socket
   static String host = "localhost";
+
+  /// port socket
   static int port = 9090;
+
+  /// enable [Console.log()]
+  ///
+  /// default = true when run in debug mode
+  /// default = false when run in release mode
   static bool logEnable = kDebugMode ? true : false;
+
+  /// when uri != null, use uri to connect socket
+  static String? uri;
 
   static WebSocketChannel? getInstance() {
     if (_channel == null) {
@@ -22,7 +34,11 @@ class Console {
   }
 
   static Uri getUri() {
-    final uriString = "ws://$host:$port";
+    String uriString = "ws://$host:$port";
+    if (uri != null) {
+      uriString = uri!;
+    }
+
     return Uri.parse(uriString);
   }
 
@@ -112,6 +128,22 @@ class Console {
     }
   }
 
+  /// Send log to [Server Log] app
+  ///
+  /// Example:
+  /// ```dart
+  /// Console.log({
+  ///   "name": "alex",
+  ///   "old": 12,
+  /// });
+  ///
+  /// Console.log("data", {
+  ///   "name": "alex",
+  ///   "old": 12,
+  /// });
+  ///
+  /// Console.log(json.decode(response));
+  /// ```
   static log(dynamic param, [dynamic params]) {
     if (logEnable == false) {
       return;

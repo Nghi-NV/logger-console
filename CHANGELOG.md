@@ -1,4 +1,8 @@
 
+## 0.1.0
+
+* add uri param
+
 ## 0.0.7
 
 * fix show android device name

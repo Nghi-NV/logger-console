@@ -16,6 +16,11 @@ With android device, you need connect to ip of ServerLog app desktop server
 Console.host = "Server Log IP";
 ```
 
+Custom host
+```dart
+Console.uri = "your-custom-host";
+```
+
 ```dart
 import 'package:logger_console/logger_console.dart';
   
@@ -44,4 +49,6 @@ onShowLog() {
 }
 ```
 
+## Credits
 
+- [@Nghi-NV](https://github.com/Nghi-NV)
