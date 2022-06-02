@@ -1,3 +1,6 @@
+## 0.1.3
+
+* fix crash when can not connect to server
 
 ## 0.1.2
 

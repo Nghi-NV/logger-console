@@ -126,10 +126,6 @@ class Console {
     if (data != null) {
       _channel!.sink.add(data);
     }
-
-    _channel!.stream.listen((onData) {}, onDone: () {
-      _channel = null;
-    });
   }
 
   /// Send log to [Server Log] app
