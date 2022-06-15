@@ -1,3 +1,7 @@
+## 0.2.0
+
+* add group, groupCollapsed, groupEnd method
+* add logBloc method
 ## 0.1.3
 
 * fix crash when can not connect to server
