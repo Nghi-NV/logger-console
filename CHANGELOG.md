@@ -1,3 +1,7 @@
+## 0.2.1
+
+* add error type
+
 ## 0.2.0
 
 * add group, groupCollapsed, groupEnd method
