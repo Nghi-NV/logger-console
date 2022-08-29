@@ -301,4 +301,17 @@ class Console {
       },
     });
   }
+
+  static errorDataToModel(String type, dynamic error, dynamic data) {
+    groupCollapsed(
+      '${type}_data_to_model-->catch',
+      LogConfig(
+        color: 'red',
+        type: LogType.groupCollapsed,
+      ),
+    );
+    log('error', error);
+    log('item', data);
+    groupEnd();
+  }
 }
