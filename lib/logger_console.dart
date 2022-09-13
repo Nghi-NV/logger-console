@@ -10,26 +10,20 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'bloc_event.dart';
+part 'logger_argument.dart';
 
 enum LogType {
+  clear,
+  log,
+  count,
+  countReset,
+  error,
   info,
+  warn,
   group,
   groupCollapsed,
   groupEnd,
-}
-
-class LogConfig {
-  final LogType? type;
-  final String? color;
-  final String? fontWeight;
-  final int? fontSize;
-
-  LogConfig({
-    this.type = LogType.info,
-    this.color,
-    this.fontWeight,
-    this.fontSize,
-  });
+  bloc,
 }
 
 class Console {
@@ -142,6 +136,16 @@ class Console {
       await getDeviceInfo();
     }
 
+    _channel!.stream.listen((event) {
+      // if (event == "ping") {
+      //   _channel!.sink.add("pong");
+      // }
+    }, onDone: () {
+      _channel = null;
+    }, onError: (error) {
+      _channel = null;
+    });
+
     final Map<String, dynamic> dataSending = {
       'type': 'fromApp',
       'clientInfo': clientInfo,
@@ -151,6 +155,29 @@ class Console {
     if (data != null) {
       _channel!.sink.add(data);
     }
+  }
+
+  static dynamic logBase(List<dynamic> args, [LogType type = LogType.log]) {
+    if (!enableLog) return;
+
+    final Map<String, dynamic> dataSending = {
+      'type': 'fromApp',
+      'logType': type.name,
+      'data': args,
+    };
+
+    if (_channel == null) {
+      connectServer(json.encode(dataSending));
+      return;
+    }
+
+    if (_channel!.closeCode != null) {
+      _channel = null;
+      connectServer(json.encode(dataSending));
+      return;
+    }
+
+    _channel!.sink.add(json.encode(dataSending));
   }
 
   /// Send log to [Server Log] app
@@ -169,60 +196,45 @@ class Console {
   ///
   /// Console.log(json.decode(response));
   /// ```
-  static log(dynamic param, [dynamic params, LogConfig? logConfig]) {
-    if (enableLog == false) {
-      return;
-    }
+  static dynamic log = VarArgsFunction((args) {
+    logBase(args);
+  });
 
-    var jsonParam = param;
-    var jsonParams = params;
-    try {
-      json.encode(param);
-    } catch (error) {
-      jsonParam = "$param";
-    }
-    try {
-      json.encode(params);
-    } catch (error) {
-      jsonParams = "$params";
-    }
+  static dynamic group = VarArgsFunction((args) {
+    logBase(args, LogType.group);
+  });
 
-    final Map<String, dynamic> dataSending = {
-      'type': 'fromApp',
-      'config': {
-        'type': logConfig?.type?.name ?? LogType.info.name,
-        'color': logConfig?.color,
-        'fontWeight': logConfig?.fontWeight,
-        'fontSize': logConfig?.fontSize,
-      },
-      'data': {'param': jsonParam, 'params': jsonParams}
-    };
+  static dynamic groupCollapsed = VarArgsFunction((args) {
+    logBase(args, LogType.groupCollapsed);
+  });
 
-    if (_channel == null) {
-      connectServer(json.encode(dataSending));
-      return;
-    }
+  static dynamic groupEnd = VarArgsFunction((args) {
+    logBase(args, LogType.groupEnd);
+  });
 
-    if (_channel!.closeCode != null) {
-      _channel = null;
-      connectServer(json.encode(dataSending));
-      return;
-    }
+  static dynamic info = VarArgsFunction((args) {
+    logBase(args, LogType.info);
+  });
 
-    _channel!.sink.add(json.encode(dataSending));
-  }
+  static dynamic warn = VarArgsFunction((args) {
+    logBase(args, LogType.warn);
+  });
 
-  static group(dynamic message, [LogConfig? params]) {
-    log(message, null, params ?? LogConfig(type: LogType.group));
-  }
+  static dynamic error = VarArgsFunction((args) {
+    logBase(args, LogType.error);
+  });
 
-  static groupCollapsed(dynamic message, [LogConfig? params]) {
-    log(message, null, params ?? LogConfig(type: LogType.groupCollapsed));
-  }
+  static dynamic clear = VarArgsFunction((args) {
+    logBase(args, LogType.clear);
+  });
 
-  static groupEnd() {
-    log(null, null, LogConfig(type: LogType.groupEnd));
-  }
+  static dynamic count = VarArgsFunction((args) {
+    logBase(args, LogType.count);
+  });
+
+  static dynamic countReset = VarArgsFunction((args) {
+    logBase(args, LogType.countReset);
+  });
 
   /// Bloc to log
   ///
@@ -291,24 +303,23 @@ class Console {
   ///```
   static logBloc(dynamic currentState, dynamic nextState, BlocEvent event) {
     DateTime time = DateTime.now();
-    log({
-      'type': 'bloc',
-      'data': {
-        'preState': currentState,
-        'nextState': nextState,
-        'event': event.toJson(),
-        'time': time.toString(),
-      },
-    });
+    logBase(
+      [
+        {
+          'preState': currentState,
+          'nextState': nextState,
+          'event': event.toJson(),
+          'time': time.toString(),
+        }
+      ],
+      LogType.bloc,
+    );
   }
 
   static errorDataToModel(String type, dynamic error, dynamic data) {
     groupCollapsed(
-      '${type}_data_to_model-->catch',
-      LogConfig(
-        color: 'red',
-        type: LogType.groupCollapsed,
-      ),
+      '%c${type}_data_to_model-->catch',
+      'color: red; font-weight: bold',
     );
     log('error', error);
     log('item', data);

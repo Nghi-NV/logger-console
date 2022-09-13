@@ -1,3 +1,9 @@
+## 2.0.0
+
+* Change logic log
+* Remove LogConfig class
+* Add Console.count, warn, error, info, clear
+
 ## 0.2.1
 
 * add error type
