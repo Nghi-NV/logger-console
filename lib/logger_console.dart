@@ -54,9 +54,10 @@ class Console {
     return tags.contains('*') || tags.contains(tag);
   }
 
-  static Function(List<dynamic> messages)? _logListener;
+  static Function(List<dynamic> messages, LogType logType)? _logListener;
 
-  static void setLogListener(Function(List<dynamic> messages)? listener) {
+  static void setLogListener(
+      Function(List<dynamic> messages, LogType logType)? listener) {
     _logListener = listener;
   }
 
@@ -177,7 +178,7 @@ class Console {
     if (!enableLog) return;
 
     if (_logListener != null) {
-      _logListener!(args);
+      _logListener!(args, type);
     }
 
     final Map<String, dynamic> dataSending = {
