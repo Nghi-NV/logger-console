@@ -1,3 +1,11 @@
+## 2.2.0
+
+* Add log listener
+
+## 2.1.0
+
+* Add tags for log
+
 ## 2.0.0
 
 * Change logic log

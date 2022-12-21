@@ -44,6 +44,22 @@ class Console {
   /// when uri != null, use uri to connect socket
   static String? uri;
 
+  /// tag for log
+  /// * = all tag
+  static List<String> tags = ['*'];
+
+  /// check contains tag
+  /// return true if tags contains '*' or contains tag
+  static bool hasTag(String tag) {
+    return tags.contains('*') || tags.contains(tag);
+  }
+
+  static Function(List<dynamic> messages)? _logListener;
+
+  static void setLogListener(Function(List<dynamic> messages)? listener) {
+    _logListener = listener;
+  }
+
   static Map<String, dynamic>? clientInfo;
 
   static WebSocketChannel? getInstance() {
@@ -159,6 +175,10 @@ class Console {
 
   static dynamic logBase(List<dynamic> args, [LogType type = LogType.log]) {
     if (!enableLog) return;
+
+    if (_logListener != null) {
+      _logListener!(args);
+    }
 
     final Map<String, dynamic> dataSending = {
       'type': 'fromApp',
