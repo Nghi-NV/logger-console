@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Change lib web_socket_channel
+
 ## 2.2.1
 
 * Add log listener
