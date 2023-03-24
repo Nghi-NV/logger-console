@@ -1,13 +1,13 @@
 part of 'logger_console.dart';
 
-class LogTrace {
+class _LogTrace {
   final StackTrace _trace;
 
   String? fileName;
   int? lineNumber;
   int? columnNumber;
 
-  LogTrace(this._trace) {
+  _LogTrace(this._trace) {
     _parseTrace();
   }
 

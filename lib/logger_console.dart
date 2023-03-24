@@ -29,7 +29,10 @@ enum LogType {
 
 class Console {
   static WebSocketChannel? _channel;
-  static String? channelId;
+  static String? _channelId;
+
+  /// Identify of device
+  static get channelId => _channelId;
 
   /// host socket
   static String host = "localhost";
@@ -43,8 +46,8 @@ class Console {
   /// default = false when run in release mode
   static bool enableLog = kDebugMode ? true : false;
 
-  /// when uri != null, use uri to connect socket
-  static String? uri;
+  /// when _uri != null, use uri to connect socket
+  static String? _uri;
 
   /// tag for log
   /// * = all tag
@@ -69,7 +72,7 @@ class Console {
 
   static WebSocketChannel? getInstance() {
     if (_channel == null) {
-      connectServer();
+      _connectServer();
     }
 
     return _channel;
@@ -77,15 +80,28 @@ class Console {
 
   static Uri getUri() {
     String uriString = "ws://$host:$port";
-    if (uri != null) {
-      uriString = uri!;
+    if (_uri != null) {
+      uriString = _uri!;
     }
 
     return Uri.parse(uriString);
   }
 
+  static void setUri(String uri) {
+    if (_channel != null) {
+      try {
+        _channel!.sink.close();
+      } catch (e) {
+        //
+      }
+      _channel = null;
+    }
+
+    _uri = uri;
+  }
+
   /// Get device info
-  static Future getDeviceInfo() async {
+  static Future _getDeviceInfo() async {
     final deviceInfoPlugin = DeviceInfoPlugin();
     final deviceInfo = await deviceInfoPlugin.deviceInfo;
     final deviceInfoData = deviceInfo.toMap();
@@ -152,12 +168,12 @@ class Console {
 
     if (clientInfo?['id'] != 'Unknown' && clientInfo?['id'] != null) {
       final id = clientInfo!['id'].toString();
-      channelId = id.substring(id.length - 4, id.length);
-      clientInfo!['channel'] = channelId;
+      _channelId = id.substring(id.length - 4, id.length);
+      clientInfo!['channel'] = _channelId;
     }
   }
 
-  static connectServer([String? data]) async {
+  static _connectServer([String? data]) async {
     try {
       _channel = WebSocketChannel.connect(getUri());
     } catch (error) {
@@ -165,7 +181,7 @@ class Console {
     }
 
     if (clientInfo == null) {
-      await getDeviceInfo();
+      await _getDeviceInfo();
     }
 
     _channel!.stream.listen((event) {
@@ -189,7 +205,7 @@ class Console {
     }
   }
 
-  static dynamic logBase(List<dynamic> args, [LogType type = LogType.log]) {
+  static dynamic _logBase(List<dynamic> args, [LogType type = LogType.log]) {
     if (!enableLog) return;
 
     if (_logListener != null) {
@@ -203,13 +219,13 @@ class Console {
     };
 
     if (_channel == null) {
-      connectServer(json.encode(dataSending));
+      _connectServer(json.encode(dataSending));
       return;
     }
 
     if (_channel!.closeCode != null) {
       _channel = null;
-      connectServer(json.encode(dataSending));
+      _connectServer(json.encode(dataSending));
       return;
     }
 
@@ -232,44 +248,70 @@ class Console {
   ///
   /// Console.log(json.decode(response));
   /// ```
-  static dynamic log = VarArgsFunction((args) {
-    logBase(args);
+  static dynamic log = _VarArgsFunction((args) {
+    _logBase(args);
   });
 
-  static dynamic group = VarArgsFunction((args) {
-    logBase(args, LogType.group);
+  /// Send log group to [Server Log] app
+  ///
+  /// Example:
+  /// ```dart
+  /// Console.group("Group 1");
+  /// Console.log("data", {
+  ///   "name": "alex",
+  ///   "old": 12,
+  /// });
+  /// Console.groupEnd();
+  /// ```
+  static dynamic group = _VarArgsFunction((args) {
+    _logBase(args, LogType.group);
   });
 
-  static dynamic groupCollapsed = VarArgsFunction((args) {
-    logBase(args, LogType.groupCollapsed);
+  /// Send log group collapsed to [Server Log] app
+  ///
+  /// Example:
+  /// ```dart
+  /// Console.groupCollapsed("Group 1");
+  /// Console.log("data", {
+  ///   "name": "alex",
+  ///   "old": 12,
+  /// });
+  /// Console.groupEnd();
+  /// ```
+  static dynamic groupCollapsed = _VarArgsFunction((args) {
+    _logBase(args, LogType.groupCollapsed);
   });
 
-  static dynamic groupEnd = VarArgsFunction((args) {
-    logBase(args, LogType.groupEnd);
+  /// End log group or collapsed group
+  static dynamic groupEnd = _VarArgsFunction((args) {
+    _logBase(args, LogType.groupEnd);
   });
 
-  static dynamic info = VarArgsFunction((args) {
-    logBase(args, LogType.info);
+  /// Send log info to [Server Log] app
+  static dynamic info = _VarArgsFunction((args) {
+    _logBase(args, LogType.info);
   });
 
-  static dynamic warn = VarArgsFunction((args) {
-    logBase(args, LogType.warn);
+  /// Send log warn to [Server Log] app
+  static dynamic warn = _VarArgsFunction((args) {
+    _logBase(args, LogType.warn);
   });
 
-  static dynamic error = VarArgsFunction((args) {
-    logBase(args, LogType.error);
+  /// Send log error to [Server Log] app
+  static dynamic error = _VarArgsFunction((args) {
+    _logBase(args, LogType.error);
   });
 
-  static dynamic clear = VarArgsFunction((args) {
-    logBase(args, LogType.clear);
+  static dynamic clear = _VarArgsFunction((args) {
+    _logBase(args, LogType.clear);
   });
 
-  static dynamic count = VarArgsFunction((args) {
-    logBase(args, LogType.count);
+  static dynamic count = _VarArgsFunction((args) {
+    _logBase(args, LogType.count);
   });
 
-  static dynamic countReset = VarArgsFunction((args) {
-    logBase(args, LogType.countReset);
+  static dynamic countReset = _VarArgsFunction((args) {
+    _logBase(args, LogType.countReset);
   });
 
   /// Bloc to log
@@ -339,7 +381,7 @@ class Console {
   ///```
   static logBloc(dynamic currentState, dynamic nextState, BlocEvent event) {
     DateTime time = DateTime.now();
-    logBase(
+    _logBase(
       [
         {
           'preState': currentState,

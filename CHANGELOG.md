@@ -1,3 +1,7 @@
+## 2.5.0
+
+* Hide some function not use
+
 ## 2.4.0
 
 * Support log trace

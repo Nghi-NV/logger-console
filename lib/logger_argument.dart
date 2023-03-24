@@ -1,11 +1,11 @@
 part of 'logger_console.dart';
 
-typedef OnCall = void Function(List<dynamic> arguments);
+typedef _OnCall = void Function(List<dynamic> arguments);
 
-class VarArgsFunction {
-  final OnCall callback;
+class _VarArgsFunction {
+  final _OnCall callback;
 
-  VarArgsFunction(this.callback);
+  _VarArgsFunction(this.callback);
 
   void call() => callback([]);
 
@@ -17,7 +17,7 @@ class VarArgsFunction {
           try {
             if (argument is StackTrace) {
               if (Console.logTrace) {
-                LogTrace trace = LogTrace(argument);
+                _LogTrace trace = _LogTrace(argument);
                 return trace.toString();
               }
 
