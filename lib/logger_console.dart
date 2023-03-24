@@ -49,6 +49,8 @@ class Console {
   /// when _uri != null, use uri to connect socket
   static String? _uri;
 
+  static String? get uri => _uri;
+
   /// tag for log
   /// * = all tag
   static List<String> tags = ['*'];

@@ -1,4 +1,4 @@
-## 2.5.1
+## 2.5.2
 
 * Fix bug can not set uri to null
 
