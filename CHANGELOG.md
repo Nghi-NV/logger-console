@@ -1,3 +1,7 @@
+## 2.5.1
+
+* Fix bug can not set uri to null
+
 ## 2.5.0
 
 * Hide some function not use

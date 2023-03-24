@@ -87,7 +87,7 @@ class Console {
     return Uri.parse(uriString);
   }
 
-  static void setUri(String uri) {
+  static void setUri(String? uri) {
     if (_channel != null) {
       try {
         _channel!.sink.close();
