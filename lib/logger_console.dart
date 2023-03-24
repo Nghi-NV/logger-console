@@ -11,6 +11,7 @@ import 'package:socket_channel/web_socket_channel.dart';
 
 part 'bloc_event.dart';
 part 'logger_argument.dart';
+part 'log_trace.dart';
 
 enum LogType {
   clear,
@@ -28,6 +29,7 @@ enum LogType {
 
 class Console {
   static WebSocketChannel? _channel;
+  static String? channelId;
 
   /// host socket
   static String host = "localhost";
@@ -53,6 +55,8 @@ class Console {
   static bool hasTag(String tag) {
     return tags.contains('*') || tags.contains(tag);
   }
+
+  static bool logTrace = false;
 
   static Function(List<dynamic> messages, LogType logType)? _logListener;
 
@@ -91,7 +95,7 @@ class Console {
         'name': 'Web',
         'model': 'Web',
         'systemName': 'Web',
-        'isPhysicalDevice': 'Unknow',
+        'isPhysicalDevice': 'Unknown',
         'id': deviceInfoData['vendor'] +
             deviceInfoData['userAgent'] +
             deviceInfoData['hardwareConcurrency'].toString(),
@@ -117,7 +121,7 @@ class Console {
         'name': 'Linux',
         'model': 'Linux',
         'systemName': 'Linux',
-        'isPhysicalDevice': 'Unknow',
+        'isPhysicalDevice': 'Unknown',
         'id': deviceInfoData['machineId'],
       };
     } else if (Platform.isWindows) {
@@ -125,7 +129,7 @@ class Console {
         'name': 'Window',
         'model': 'Window',
         'systemName': 'Window',
-        'isPhysicalDevice': 'Unknow',
+        'isPhysicalDevice': 'Unknown',
         'id': deviceInfoData['machineId'],
       };
     } else if (Platform.isMacOS) {
@@ -133,17 +137,23 @@ class Console {
         'name': 'MacOS',
         'model': 'MacOS',
         'systemName': 'MacOS',
-        'isPhysicalDevice': 'Unknow',
+        'isPhysicalDevice': 'Unknown',
         'id': deviceInfoData['machineId'],
       };
     } else {
       clientInfo = {
-        'name': 'Unknow',
-        'model': 'Unknow',
-        'systemName': 'Unknow',
-        'isPhysicalDevice': 'Unknow',
-        'id': 'Unknow',
+        'name': 'Unknown',
+        'model': 'Unknown',
+        'systemName': 'Unknown',
+        'isPhysicalDevice': 'Unknown',
+        'id': 'Unknown',
       };
+    }
+
+    if (clientInfo?['id'] != 'Unknown' && clientInfo?['id'] != null) {
+      final id = clientInfo!['id'].toString();
+      channelId = id.substring(id.length - 4, id.length);
+      clientInfo!['channel'] = channelId;
     }
   }
 

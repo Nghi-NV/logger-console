@@ -1,3 +1,8 @@
+## 2.4.0
+
+* Support log trace
+* Add log channel
+
 ## 2.3.0
 
 * Change lib web_socket_channel

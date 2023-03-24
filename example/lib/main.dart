@@ -30,7 +30,8 @@ class MyHomePage extends StatelessWidget {
   }
 
   void onLogInfoPress() {
-    Console.info("%cLog Info::", 'color: green; font-weight: bold;', todos);
+    Console.info("%cLog Info::", 'color: green; font-weight: bold;', todos,
+        StackTrace.current);
   }
 
   void onLogWarnPress() {

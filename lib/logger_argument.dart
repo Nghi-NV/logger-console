@@ -15,6 +15,15 @@ class VarArgsFunction {
       invocation.positionalArguments.map(
         (argument) {
           try {
+            if (argument is StackTrace) {
+              if (Console.logTrace) {
+                LogTrace trace = LogTrace(argument);
+                return trace.toString();
+              }
+
+              return '';
+            }
+
             return json.encode(argument);
           } catch (e) {
             return "$argument";

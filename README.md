@@ -9,7 +9,7 @@
 In the main.dart set `logEnable = true` for release mode 
 ```dart
 Console.logEnable = true;
-```
+```s
 
 With android device, you need connect to ip of ServerLog app desktop server
 ```dart
