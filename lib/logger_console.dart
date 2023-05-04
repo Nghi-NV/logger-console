@@ -186,13 +186,22 @@ class Console {
       await _getDeviceInfo();
     }
 
-    _channel!.stream.listen((event) {
-      // if (event == "ping") {
-      //   _channel!.sink.add("pong");
-      // }
-    }, onDone: () {
-      _channel = null;
-    }, onError: (error) {
+    _channel!.ready.then((_) {
+      _channel!.stream.listen(
+        (event) {
+          // if (event == "ping") {
+          //   _channel!.sink.add("pong");
+          // }
+        },
+        onDone: () {
+          _channel = null;
+        },
+        onError: (error) {
+          _channel = null;
+        },
+        cancelOnError: true,
+      );
+    }).onError((error, stackTrace) {
       _channel = null;
     });
 
@@ -200,6 +209,11 @@ class Console {
       'type': 'fromApp',
       'clientInfo': clientInfo,
     };
+
+    if (_channel == null) {
+      return;
+    }
+
     _channel!.sink.add(json.encode(dataSending));
 
     if (data != null) {

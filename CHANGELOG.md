@@ -1,3 +1,7 @@
+## 2.5.3
+
+* Fix bug socket channel not ready
+
 ## 2.5.2
 
 * Fix bug can not set uri to null

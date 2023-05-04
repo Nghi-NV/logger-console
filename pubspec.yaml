@@ -1,6 +1,6 @@
 name: logger_console
 description: A logger project to show log in flutter. It's easy to read your log the same javascript.
-version: 2.5.2
+version: 2.5.3
 homepage: https://github.com/Nghi-NV/logger-console
 maintainer: nghinv (@Nghi-NV)
 
