@@ -1,3 +1,7 @@
+## 2.6.0
+
+* Upgrade lib device_info_plus
+
 ## 2.5.3
 
 * Fix bug socket channel not ready
