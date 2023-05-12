@@ -1,3 +1,7 @@
+## 2.7.0
+
+* Update macOS device info
+
 ## 2.6.0
 
 * Upgrade lib device_info_plus

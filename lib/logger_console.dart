@@ -152,11 +152,11 @@ class Console {
       };
     } else if (Platform.isMacOS) {
       clientInfo = {
-        'name': 'MacOS',
-        'model': 'MacOS',
-        'systemName': 'MacOS',
+        'name': deviceInfoData['computerName'],
+        'model': deviceInfoData['hostName'],
+        'systemName': deviceInfoData['computerName'],
         'isPhysicalDevice': 'Unknown',
-        'id': deviceInfoData['machineId'],
+        'id': deviceInfoData['computerName'],
       };
     } else {
       clientInfo = {
