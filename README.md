@@ -4,7 +4,7 @@
 
 ## Usage
 
-- Download [`ServerLog`](https://drive.google.com/drive/folders/1h3qreStLaesHTFkgwHRKaMZFrt88Cx-Y?usp=sharing) application for mac os, window and linux
+- Download [`ServerLog`](https://drive.google.com/drive/folders/1P4cqXhalzsiPtrVAKWvoD9tK_pt9ZpzJ?usp=share_link) application for mac os, window and linux
 
 In the main.dart set `logEnable = true` for release mode 
 ```dart
@@ -50,19 +50,6 @@ onShowLog() {
   Console.groupEnd();
 }
 ```
-
-## Issues
-
-- Mac OS App desktop server can not connect to server log
-
-macOS needs you to request a specific entitlement in order to access the network. To do that open macos/Runner/DebugProfile.entitlements and add the following key-value pair.
-
-```xml
-<key>com.apple.security.network.client</key>
-<true/>
-```
-
-Then do the same thing in macos/Runner/Release.entitlements.
 
 ## Credits
 

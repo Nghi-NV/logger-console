@@ -1,3 +1,9 @@
+## 3.0.0
+
+* Change log logic
+
+* Update log server
+
 ## 2.7.0
 
 * Update macOS device info

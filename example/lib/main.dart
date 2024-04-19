@@ -25,6 +25,7 @@ class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   void onLogPress() {
+    Console.host = "10.10.50.113";
     Console.log("%c Hello World", "color: red; font-size: 20px");
     Console.log("%cTodoList", 'color: green; font-weight: bold;', todos);
   }

@@ -11,6 +11,8 @@ class _VarArgsFunction {
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
+    if (!Console.enableLog) return;
+
     return callback(
       invocation.positionalArguments.map(
         (argument) {

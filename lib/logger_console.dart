@@ -9,23 +9,9 @@ import 'package:flutter/foundation.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:socket_channel/web_socket_channel.dart';
 
-part 'bloc_event.dart';
 part 'logger_argument.dart';
 part 'log_trace.dart';
-
-enum LogType {
-  clear,
-  log,
-  count,
-  countReset,
-  error,
-  info,
-  warn,
-  group,
-  groupCollapsed,
-  groupEnd,
-  bloc,
-}
+part '_model.dart';
 
 class Console {
   static WebSocketChannel? _channel;
@@ -70,7 +56,7 @@ class Console {
     _logListener = listener;
   }
 
-  static Map<String, dynamic>? clientInfo;
+  static ClientInfo? clientInfo;
 
   static WebSocketChannel? getInstance() {
     if (_channel == null) {
@@ -109,69 +95,96 @@ class Console {
     final deviceInfoData = deviceInfo.toMap();
 
     if (kIsWeb) {
-      clientInfo = {
-        'name': 'Web',
-        'model': 'Web',
-        'systemName': 'Web',
-        'isPhysicalDevice': 'Unknown',
-        'id': deviceInfoData['vendor'] +
+      clientInfo = ClientInfo(
+        id: deviceInfoData['vendor'] +
             deviceInfoData['userAgent'] +
             deviceInfoData['hardwareConcurrency'].toString(),
-      };
+        name: 'Web ${deviceInfoData['userAgent']}',
+        platform: 'Web',
+        debug: kDebugMode,
+        isSimulator: false,
+        version: 'Unknown',
+        model: 'Web',
+        manufacturer: 'Unknown',
+      );
     } else if (Platform.isAndroid) {
-      clientInfo = {
-        'name': deviceInfoData['model'],
-        'model': deviceInfoData['model'],
-        'systemName': 'Android',
-        'isPhysicalDevice': deviceInfoData['isPhysicalDevice'],
-        'id': deviceInfoData['androidId'],
-      };
+      clientInfo = ClientInfo(
+        id: deviceInfoData['androidId'],
+        name: deviceInfoData['model'],
+        platform: 'Android',
+        debug: kDebugMode,
+        isSimulator: deviceInfoData['isPhysicalDevice'],
+        model: deviceInfoData['model'],
+        os: 'Android',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'Android',
+      );
     } else if (Platform.isIOS) {
-      clientInfo = {
-        'name': deviceInfoData['name'],
-        'model': deviceInfoData['model'],
-        'systemName': deviceInfoData['systemName'],
-        'isPhysicalDevice': deviceInfoData['isPhysicalDevice'],
-        'id': deviceInfoData['identifierForVendor'],
-      };
+      clientInfo = ClientInfo(
+        id: deviceInfoData['identifierForVendor'],
+        name: deviceInfoData['name'],
+        platform: 'iOS',
+        debug: kDebugMode,
+        isSimulator: deviceInfoData['isPhysicalDevice'],
+        model: deviceInfoData['model'],
+        os: 'iOS',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'iOS',
+      );
     } else if (Platform.isLinux) {
-      clientInfo = {
-        'name': 'Linux',
-        'model': 'Linux',
-        'systemName': 'Linux',
-        'isPhysicalDevice': 'Unknown',
-        'id': deviceInfoData['machineId'],
-      };
+      clientInfo = ClientInfo(
+        id: deviceInfoData['machineId'],
+        name: 'Linux',
+        platform: 'Linux',
+        debug: kDebugMode,
+        isSimulator: false,
+        model: 'Linux',
+        os: 'Linux',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'Linux',
+      );
     } else if (Platform.isWindows) {
-      clientInfo = {
-        'name': 'Window',
-        'model': 'Window',
-        'systemName': 'Window',
-        'isPhysicalDevice': 'Unknown',
-        'id': deviceInfoData['machineId'],
-      };
+      clientInfo = ClientInfo(
+        id: deviceInfoData['machineId'],
+        name: 'Window',
+        platform: 'Window',
+        debug: kDebugMode,
+        isSimulator: false,
+        model: 'Window',
+        os: 'Window',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'Window',
+      );
     } else if (Platform.isMacOS) {
-      clientInfo = {
-        'name': deviceInfoData['computerName'],
-        'model': deviceInfoData['hostName'],
-        'systemName': deviceInfoData['computerName'],
-        'isPhysicalDevice': 'Unknown',
-        'id': deviceInfoData['computerName'],
-      };
+      clientInfo = ClientInfo(
+        id: deviceInfoData['computerName'],
+        name: deviceInfoData['computerName'],
+        platform: 'MacOS',
+        debug: kDebugMode,
+        isSimulator: false,
+        model: deviceInfoData['hostName'],
+        os: 'MacOS',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'MacOS',
+      );
     } else {
-      clientInfo = {
-        'name': 'Unknown',
-        'model': 'Unknown',
-        'systemName': 'Unknown',
-        'isPhysicalDevice': 'Unknown',
-        'id': 'Unknown',
-      };
-    }
-
-    if (clientInfo?['id'] != 'Unknown' && clientInfo?['id'] != null) {
-      final id = clientInfo!['id'].toString();
-      _channelId = id.substring(id.length - 4, id.length);
-      clientInfo!['channel'] = _channelId;
+      clientInfo = ClientInfo(
+        id: 'Unknown',
+        name: 'Unknown',
+        platform: 'Unknown',
+        debug: kDebugMode,
+        isSimulator: false,
+        model: 'Unknown',
+        os: 'Unknown',
+        language: 'Unknown',
+        timeZone: 'Unknown',
+        userAgent: 'Unknown',
+      );
     }
   }
 
@@ -182,17 +195,9 @@ class Console {
       return;
     }
 
-    if (clientInfo == null) {
-      await _getDeviceInfo();
-    }
-
     _channel!.ready.then((_) {
       _channel!.stream.listen(
-        (event) {
-          // if (event == "ping") {
-          //   _channel!.sink.add("pong");
-          // }
-        },
+        (event) {},
         onDone: () {
           _channel = null;
         },
@@ -205,47 +210,52 @@ class Console {
       _channel = null;
     });
 
-    final Map<String, dynamic> dataSending = {
-      'type': 'fromApp',
-      'clientInfo': clientInfo,
-    };
-
     if (_channel == null) {
       return;
     }
-
-    _channel!.sink.add(json.encode(dataSending));
 
     if (data != null) {
       _channel!.sink.add(data);
     }
   }
 
-  static dynamic _logBase(List<dynamic> args, [LogType type = LogType.log]) {
+  static dynamic _logBase(List<dynamic> args,
+      [LogType type = LogType.log]) async {
     if (!enableLog) return;
 
     if (_logListener != null) {
       _logListener!(args, type);
     }
 
-    final Map<String, dynamic> dataSending = {
-      'type': 'fromApp',
-      'logType': type.name,
-      'data': args,
+    if (clientInfo == null) {
+      await _getDeviceInfo();
+    }
+
+    final payloadData = {
+      "clientInfo": clientInfo,
+      "data": args,
     };
 
+    final payload = _PayloadData(data: json.encode(payloadData));
+    final dataRequest = _RequestData(
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+      logType: type,
+      secure: payload.encryptionKey != null,
+      payload: payload,
+    );
+
     if (_channel == null) {
-      _connectServer(json.encode(dataSending));
+      _connectServer(json.encode(dataRequest.toJson()));
       return;
     }
 
     if (_channel!.closeCode != null) {
       _channel = null;
-      _connectServer(json.encode(dataSending));
+      _connectServer(json.encode(dataRequest.toJson()));
       return;
     }
 
-    _channel!.sink.add(json.encode(dataSending));
+    _channel!.sink.add(json.encode(dataRequest.toJson()));
   }
 
   /// Send log to [Server Log] app
