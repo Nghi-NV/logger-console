@@ -93,7 +93,10 @@ class Console {
     final deviceInfo = await NDeviceInfo().getDeviceInfo();
     clientInfo = ClientInfo(
       id: deviceInfo?.id ?? Platform.localHostname,
-      name: deviceInfo?.name ?? Platform.localHostname,
+      name: (deviceInfo?.name == "iPhone"
+              ? deviceInfo?.model
+              : deviceInfo?.name) ??
+          Platform.localHostname,
       platform: deviceInfo?.os ?? Platform.operatingSystem,
       version: deviceInfo?.version ?? Platform.operatingSystemVersion,
       os: deviceInfo?.os ?? (kIsWeb ? 'Web' : Platform.operatingSystem),

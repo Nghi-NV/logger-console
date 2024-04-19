@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Update device name
+
 ## 3.0.1
 
 * Change log logic
