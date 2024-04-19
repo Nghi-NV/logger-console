@@ -5,8 +5,8 @@
 import FlutterMacOS
 import Foundation
 
-import device_info_plus
+import nghinv_device_info
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
+  NDeviceInfoPlugin.register(with: registry.registrar(forPlugin: "NDeviceInfoPlugin"))
 }

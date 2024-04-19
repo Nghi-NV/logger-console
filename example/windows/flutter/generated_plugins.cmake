@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  nghinv_device_info
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

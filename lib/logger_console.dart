@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:nghinv_device_info/nghinv_device_info.dart';
 import 'package:socket_channel/web_socket_channel.dart';
 
 part 'logger_argument.dart';
@@ -90,102 +90,22 @@ class Console {
 
   /// Get device info
   static Future _getDeviceInfo() async {
-    final deviceInfoPlugin = DeviceInfoPlugin();
-    final deviceInfo = await deviceInfoPlugin.deviceInfo;
-    final deviceInfoData = deviceInfo.toMap();
-
-    if (kIsWeb) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['vendor'] +
-            deviceInfoData['userAgent'] +
-            deviceInfoData['hardwareConcurrency'].toString(),
-        name: 'Web ${deviceInfoData['userAgent']}',
-        platform: 'Web',
-        debug: kDebugMode,
-        isSimulator: false,
-        version: 'Unknown',
-        model: 'Web',
-        manufacturer: 'Unknown',
-      );
-    } else if (Platform.isAndroid) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['androidId'],
-        name: deviceInfoData['model'],
-        platform: 'Android',
-        debug: kDebugMode,
-        isSimulator: deviceInfoData['isPhysicalDevice'],
-        model: deviceInfoData['model'],
-        os: 'Android',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'Android',
-      );
-    } else if (Platform.isIOS) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['identifierForVendor'],
-        name: deviceInfoData['name'],
-        platform: 'iOS',
-        debug: kDebugMode,
-        isSimulator: deviceInfoData['isPhysicalDevice'],
-        model: deviceInfoData['model'],
-        os: 'iOS',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'iOS',
-      );
-    } else if (Platform.isLinux) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['machineId'],
-        name: 'Linux',
-        platform: 'Linux',
-        debug: kDebugMode,
-        isSimulator: false,
-        model: 'Linux',
-        os: 'Linux',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'Linux',
-      );
-    } else if (Platform.isWindows) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['machineId'],
-        name: 'Window',
-        platform: 'Window',
-        debug: kDebugMode,
-        isSimulator: false,
-        model: 'Window',
-        os: 'Window',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'Window',
-      );
-    } else if (Platform.isMacOS) {
-      clientInfo = ClientInfo(
-        id: deviceInfoData['computerName'],
-        name: deviceInfoData['computerName'],
-        platform: 'MacOS',
-        debug: kDebugMode,
-        isSimulator: false,
-        model: deviceInfoData['hostName'],
-        os: 'MacOS',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'MacOS',
-      );
-    } else {
-      clientInfo = ClientInfo(
-        id: 'Unknown',
-        name: 'Unknown',
-        platform: 'Unknown',
-        debug: kDebugMode,
-        isSimulator: false,
-        model: 'Unknown',
-        os: 'Unknown',
-        language: 'Unknown',
-        timeZone: 'Unknown',
-        userAgent: 'Unknown',
-      );
-    }
+    final deviceInfo = await NDeviceInfo().getDeviceInfo();
+    clientInfo = ClientInfo(
+      id: deviceInfo?.id ?? Platform.localHostname,
+      name: deviceInfo?.name ?? Platform.localHostname,
+      platform: deviceInfo?.os ?? Platform.operatingSystem,
+      version: deviceInfo?.version ?? Platform.operatingSystemVersion,
+      os: deviceInfo?.os ?? (kIsWeb ? 'Web' : Platform.operatingSystem),
+      osVersion: kIsWeb ? 'Web' : Platform.operatingSystem,
+      language: kIsWeb ? null : Platform.localeName,
+      userAgent: deviceInfo?.userAgent,
+      timeZone: DateTime.now().timeZoneName,
+      isSimulator: deviceInfo?.isSimulator ?? false,
+      buildVersion: deviceInfo?.buildVersion ?? Platform.version,
+      model: deviceInfo?.model,
+      manufacturer: deviceInfo?.manufacturer,
+    );
   }
 
   static _connectServer([String? data]) async {
