@@ -1,3 +1,7 @@
+## 3.1.1
+
+* Update device info package
+
 ## 3.0.2
 
 * Update device name
